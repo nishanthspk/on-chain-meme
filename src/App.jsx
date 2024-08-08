@@ -202,15 +202,31 @@ export default function App() {
   };
   useEffect(() => {
     const fetchUserCollection = async () => {
-      const answer = await GETUSERCOLLECTIONS(user);
-      setUserCollection(answer);
-      console.log("User Collection:", answer);
-      console.log(answer.communities);
-      console.log("User Collection:", userCollection);
-      console.log("contract Name", userCollection.contractNames[0]);
-      console.log("communities", userCollection.communities[0]);
-      console.log("medias", userCollection.medias);
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const userAddress = accounts[0]; 
+    
+        if (!userAddress) {
+          console.error('User address is not available');
+          return;
+        }
+    
+        const userCollections = await GETUSERCOLLECTIONS(userAddress);
+    
+        if (!userCollections || !userCollections.communities) {
+          console.error('User collections or communities are undefined');
+          return;
+        }
+    
+        console.log('User Collections:', userCollections);
+        // Handle userCollections.communities as needed
+    
+      } catch (error) {
+        console.error('Error fetching user collection:', error);
+      }
     };
+    
+    
     // Fetch immediately on mount
     fetchUserCollection();
 
